@@ -3,6 +3,7 @@ package ni9logic.banking;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.util.Arrays;
 
 public class Main {
 
@@ -55,6 +56,26 @@ public class Main {
         passwordText.setFont(jetBrainsMed);
         passwordText.setBounds(300, 150, 200, 25);
 
+        // Login Button
+        JButton loginBtn = new JButton("Login");
+        loginBtn.setFont(jetBrains);
+        loginBtn.setBounds(300, 200, 200, 25);
+
+        // Getting username and password if Login btn is pressed
+        loginBtn.addActionListener(e -> {
+            String username = usernameText.getText();
+            char [] passArray = passwordText.getPassword();
+            String password = new String(passArray);
+
+            String message = "<html><font color='blue'>Username:</font> " + username + "<br>" +
+                    "<font color='blue'>Password:</font> " + password + "</html>";
+
+
+            if (username.equals("Ni9Logic") && password.equals("HASsan@4r"))
+                JOptionPane.showMessageDialog(frame, message);
+            else
+                JOptionPane.showMessageDialog(frame, "Invalid Credentials");
+        });
 
         // Creating a panel so we can use multiple instances
         JPanel panel = new JPanel();
@@ -63,6 +84,7 @@ public class Main {
         panel.add(usernameText);
         panel.add(passwordLabel);
         panel.add(passwordText);
+        panel.add(loginBtn);
         panel.setLayout(null);
         panel.setBounds(0, 0, 1024, 800);
 
