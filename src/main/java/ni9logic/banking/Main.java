@@ -26,7 +26,7 @@ public class Main {
         label.setBounds(200, 5, 600, 50); // Set x, y, width, height
 
         // Setting border of the label
-        label.setBorder(new LineBorder(Color.blue, 6, true));
+        label.setBorder(new LineBorder(Color.black, 6, true));
 
         // Setting Alignment
         label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -43,13 +43,26 @@ public class Main {
         // Username TextField
         JTextField usernameText = new JTextField();
         usernameText.setFont(jetBrainsMed);
-        usernameText.setBounds(300, 100, 200, 30);
+        usernameText.setBounds(300, 105, 200, 25);
+
+        // Password Label
+        JLabel passwordLabel = new JLabel("Password ");
+        passwordLabel.setFont(jetBrains);
+        passwordLabel.setBounds(200, 150, 100, 30);
+
+        // Password Text Field
+        JPasswordField passwordText = new JPasswordField(20);
+        passwordText.setFont(jetBrainsMed);
+        passwordText.setBounds(300, 150, 200, 25);
+
 
         // Creating a panel so we can use multiple instances
         JPanel panel = new JPanel();
         panel.add(label);
         panel.add(usernameLabel);
         panel.add(usernameText);
+        panel.add(passwordLabel);
+        panel.add(passwordText);
         panel.setLayout(null);
         panel.setBounds(0, 0, 1024, 800);
 
