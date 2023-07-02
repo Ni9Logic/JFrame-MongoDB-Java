@@ -3,10 +3,12 @@ package ni9logic.banking;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 
 public class UserMenu {
-    private static void WithdrawBtn(JFrame menu, JPanel panel, Font jetBrainsMed, Font jetBrains){
+    private static void WithdrawBtn(JFrame menu, JPanel panel, Font jetBrainsMed, Font jetBrains) {
         JButton withdraw = new JButton("Withdraw Amount");
         withdraw.setFont(jetBrainsMed);
         withdraw.setBounds(350, 100, 200, 30);
@@ -65,27 +67,52 @@ public class UserMenu {
             withdrawButton.setFont(jetBrainsMed);
             withdrawButton.setBounds(350, 250, 200, 30);
 
+            // Document Listener
+            DocumentListener documentListener = new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    checkFields();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    checkFields();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    checkFields();
+                }
+
+                private void checkFields() {
+                    String loginText = withdrawText.getText();
+                    withdrawButton.setEnabled(!loginText.isEmpty());
+                }
+            };
+
+            // Adding the document listener as well
+            withdrawText.setText("");
+            withdrawText.getDocument().addDocumentListener(documentListener);
+
             // What happens when withdraw Button is pressed
             withdrawButton.addActionListener(withdrawA -> {
                 // Getting withdraw Amount
                 String withdrawAmount = withdrawText.getText();
 
                 // Handling if withdraw amount is empty
-                if (!withdrawAmount.isEmpty()) {
-                    try {
-                        double dWithdrawAmount = Double.parseDouble(withdrawAmount);
-                        double availableBalance = Double.parseDouble(currentBalance);
+                try {
+                    double dWithdrawAmount = Double.parseDouble(withdrawAmount);
+                    double availableBalance = Double.parseDouble(currentBalance);
 
-                        // Checking
-                        if (dWithdrawAmount > 0 && dWithdrawAmount <= availableBalance)
-                            JOptionPane.showMessageDialog(withdrawFrame, "Good input");
-                        else if (dWithdrawAmount > availableBalance)
-                            JOptionPane.showMessageDialog(withdrawFrame, "Insufficient Balance");
-                        else
-                            JOptionPane.showMessageDialog(withdrawFrame, "Enter valid amount");
-                    } catch (NumberFormatException error){
-                        JOptionPane.showMessageDialog(withdrawFrame, "Only digits allowed");
-                    }
+                    // Checking
+                    if (dWithdrawAmount > 0 && dWithdrawAmount <= availableBalance)
+                        JOptionPane.showMessageDialog(withdrawFrame, "Good input");
+                    else if (dWithdrawAmount > availableBalance)
+                        JOptionPane.showMessageDialog(withdrawFrame, "Insufficient Balance");
+                    else
+                        JOptionPane.showMessageDialog(withdrawFrame, "Enter valid amount");
+                } catch (NumberFormatException error) {
+                    JOptionPane.showMessageDialog(withdrawFrame, "Only digits allowed");
                 }
             });
 
@@ -116,7 +143,7 @@ public class UserMenu {
         panel.add(withdraw);
     }
 
-    private static void DepositBtn(JPanel panel, Font jetBrainsMed){
+    private static void DepositBtn(JPanel panel, Font jetBrainsMed) {
         JButton deposit = new JButton("Deposit Amount");
         deposit.setFont(jetBrainsMed);
         deposit.setBounds(350, 150, 200, 30);
@@ -124,7 +151,7 @@ public class UserMenu {
         panel.add(deposit);
     }
 
-    private static void TransferBtn(JPanel panel, Font jetBrainsMed){
+    private static void TransferBtn(JPanel panel, Font jetBrainsMed) {
         JButton transferBtn = new JButton("Transfer Amount");
         transferBtn.setFont(jetBrainsMed);
         transferBtn.setBounds(350, 200, 200, 30);
@@ -132,7 +159,7 @@ public class UserMenu {
         panel.add(transferBtn);
     }
 
-    private static void ProfileBtn(JPanel panel, Font jetBrainsMed){
+    private static void ProfileBtn(JPanel panel, Font jetBrainsMed) {
         JButton profileBtn = new JButton("Show Profile");
         profileBtn.setFont(jetBrainsMed);
         profileBtn.setBounds(350, 250, 200, 30);
@@ -140,14 +167,15 @@ public class UserMenu {
         panel.add(profileBtn);
     }
 
-    private static void TransactionsBtn(JPanel panel, Font jetBrainsMed){
+    private static void TransactionsBtn(JPanel panel, Font jetBrainsMed) {
         JButton transactionBtn = new JButton("Show Transactions");
         transactionBtn.setFont(jetBrainsMed);
         transactionBtn.setBounds(350, 300, 200, 30);
 
         panel.add(transactionBtn);
     }
-    private static void LogoutBtn(JFrame mainFrame, JFrame menuFrame, JPanel panel, Font jetBrainsMed){
+
+    private static void LogoutBtn(JFrame mainFrame, JFrame menuFrame, JPanel panel, Font jetBrainsMed) {
         JButton logoutBtn = new JButton("Log Out");
         logoutBtn.setFont(jetBrainsMed);
         logoutBtn.setBounds(350, 350, 200, 30);
@@ -159,7 +187,8 @@ public class UserMenu {
 
         panel.add(logoutBtn);
     }
-    public static void userMenu(JFrame frame, Font jetBrains, Font jetBrainsMed){
+
+    public static void userMenu(JFrame frame, Font jetBrains, Font jetBrainsMed) {
         JPanel panel = new JPanel();
         panel.setLayout(null);
         panel.setBounds(0, 0, Main.WIDTH, Main.HEIGHT);
