@@ -39,6 +39,7 @@ public class Main {
         label.setFont(jetBrains);
 
         Login.loginMenu(frame, panel, jetBrains, jetBrainsMed);
+        Register.registerMenu(frame, panel, jetBrains);
 
         panel.add(label);
         panel.setLayout(null);

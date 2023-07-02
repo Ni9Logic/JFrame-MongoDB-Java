@@ -6,7 +6,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 
 public class Login {
-    private static boolean isLogin = false;
     public static void loginMenu (JFrame frame, JPanel panel, Font jetBrains, Font jetBrainsMed){
 
         // Creating register menu
@@ -67,7 +66,6 @@ public class Login {
         passwordText.getDocument().addDocumentListener(documentListener);
 
         loginBtn.addActionListener(e -> {
-            isLogin = false;
             // Getting username and password if Login btn is pressed
             String username = usernameText.getText();
             char[] passArray = passwordText.getPassword();
