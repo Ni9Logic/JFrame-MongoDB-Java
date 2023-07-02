@@ -3,7 +3,6 @@ package ni9logic.banking;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.util.Arrays;
 
 public class Main {
 
