@@ -40,7 +40,7 @@ public class Main {
 
         // Menus
         Login.loginMenu(frame, panel, jetBrains, jetBrainsMed);
-        Register.registerMenu(frame, panel, jetBrains);
+        Register.registerMenu(frame, panel, jetBrains, jetBrainsMed);
 
         // Adding stuff into panels
         panel.add(label);

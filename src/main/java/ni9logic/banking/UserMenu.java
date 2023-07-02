@@ -66,6 +66,7 @@ public class UserMenu {
             JButton withdrawButton = new JButton("Withdraw Amount");
             withdrawButton.setFont(jetBrainsMed);
             withdrawButton.setBounds(350, 250, 200, 30);
+            withdrawButton.setEnabled(false);
 
             // Document Listener
             DocumentListener documentListener = new DocumentListener() {

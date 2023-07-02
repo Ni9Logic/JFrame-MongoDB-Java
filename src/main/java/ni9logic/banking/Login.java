@@ -1,5 +1,7 @@
 package ni9logic.banking;
 
+import org.bson.Document;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -71,7 +73,8 @@ public class Login {
             char[] passArray = passwordText.getPassword();
             String password = new String(passArray);
 
-            if (username.equals("a") && password.equals("a")) {
+            Document inSessionUser = Database.validateUser(username, password);
+            if (inSessionUser != null) {
                 usernameText.setText("");
                 passwordText.setText("");
                 JOptionPane.showMessageDialog(frame, "Login Successful");
