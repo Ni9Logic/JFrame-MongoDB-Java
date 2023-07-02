@@ -73,7 +73,7 @@ public class Login {
             char[] passArray = passwordText.getPassword();
             String password = new String(passArray);
 
-            if (username.equals("Ni9Logic") && password.equals("HASsan@4r")) {
+            if (username.equals("a") && password.equals("a")) {
                 usernameText.setText("");
                 passwordText.setText("");
                 JOptionPane.showMessageDialog(frame, "Login Successful");
