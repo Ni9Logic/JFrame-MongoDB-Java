@@ -38,9 +38,11 @@ public class Main {
         label.setVerticalAlignment(SwingConstants.CENTER);
         label.setFont(jetBrains);
 
+        // Menus
         Login.loginMenu(frame, panel, jetBrains, jetBrainsMed);
         Register.registerMenu(frame, panel, jetBrains);
 
+        // Adding stuff into panels
         panel.add(label);
         panel.setLayout(null);
         panel.setBounds(0, 0, WIDTH, HEIGHT);
