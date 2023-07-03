@@ -1,6 +1,8 @@
 package ni9logic.banking;
 
 
+import org.bson.Document;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
@@ -8,7 +10,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 
 public class UserMenu {
-    private static void WithdrawBtn(JFrame menu, JPanel panel, Font jetBrainsMed, Font jetBrains) {
+    private static void WithdrawBtn(JFrame menu, JPanel panel, Font jetBrainsMed, Font jetBrains, Document inSessionUser) {
         JButton withdraw = new JButton("Withdraw Amount");
         withdraw.setFont(jetBrainsMed);
         withdraw.setBounds(350, 100, 200, 30);
@@ -44,11 +46,9 @@ public class UserMenu {
             label.setVerticalAlignment(SwingConstants.CENTER);
             label.setFont(jetBrains);
 
-            // This will remain unused for now
-            String currentBalance = "25000";
 
             // Getting a label for current Balance
-            JLabel currentBalanceLabel = new JLabel("Your current balance is: " + currentBalance);
+            JLabel currentBalanceLabel = new JLabel("Your current balance is: " + inSessionUser.get("Balance"));
             currentBalanceLabel.setBounds(250, 100, 250, 50);
             currentBalanceLabel.setForeground(Color.blue);
             currentBalanceLabel.setFont(jetBrainsMed);
@@ -103,12 +103,29 @@ public class UserMenu {
                 // Handling if withdraw amount is empty
                 try {
                     double dWithdrawAmount = Double.parseDouble(withdrawAmount);
-                    double availableBalance = Double.parseDouble(currentBalance);
+                    double availableBalance = Double.parseDouble(inSessionUser.get("Balance").toString());
 
                     // Checking
-                    if (dWithdrawAmount > 0 && dWithdrawAmount <= availableBalance)
-                        JOptionPane.showMessageDialog(withdrawFrame, "Good input");
-                    else if (dWithdrawAmount > availableBalance)
+                    if (dWithdrawAmount > 0 && dWithdrawAmount <= availableBalance) {
+                        double newBalance = availableBalance - dWithdrawAmount;
+                        boolean isUpdated = Database.updateUser(inSessionUser.get("Username").toString(), "Balance", String.valueOf(newBalance));
+
+                        if (isUpdated) {
+                            JOptionPane.showMessageDialog(withdrawFrame, "Amount Successfully withdrawn");
+                            // Update the current balance label with the new balance
+
+                            // Now to get latest updates
+                            Document latestUser = Database.findUserByName(inSessionUser.get("Username").toString());
+                            assert latestUser != null;
+                            currentBalanceLabel.setText("Your current balance is: " + latestUser.get("Balance").toString());
+                            currentBalanceLabel.repaint();
+
+                            // Creating a transaction
+                            Database.createTransaction(inSessionUser.get("Username").toString(), "", "Withdraw", dWithdrawAmount);
+
+                        } else
+                            JOptionPane.showMessageDialog(withdrawFrame, "Random Error Occurred");
+                    } else if (dWithdrawAmount > availableBalance)
                         JOptionPane.showMessageDialog(withdrawFrame, "Insufficient Balance");
                     else
                         JOptionPane.showMessageDialog(withdrawFrame, "Enter valid amount");
@@ -189,7 +206,7 @@ public class UserMenu {
         panel.add(logoutBtn);
     }
 
-    public static void userMenu(JFrame frame, Font jetBrains, Font jetBrainsMed) {
+    public static void userMenu(JFrame frame, Font jetBrains, Font jetBrainsMed, Document inSessionUser) {
         JPanel panel = new JPanel();
         panel.setLayout(null);
         panel.setBounds(0, 0, Main.WIDTH, Main.HEIGHT);
@@ -219,7 +236,7 @@ public class UserMenu {
 
         // Adding in panel
         panel.add(label);
-        WithdrawBtn(menu, panel, jetBrainsMed, jetBrains);
+        WithdrawBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
         DepositBtn(panel, jetBrainsMed);
         TransferBtn(panel, jetBrainsMed);
         ProfileBtn(panel, jetBrainsMed);

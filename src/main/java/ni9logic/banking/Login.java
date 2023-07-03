@@ -78,7 +78,7 @@ public class Login {
                 usernameText.setText("");
                 passwordText.setText("");
                 JOptionPane.showMessageDialog(frame, "Login Successful");
-                UserMenu.userMenu(frame, jetBrains, jetBrainsMed);
+                UserMenu.userMenu(frame, jetBrains, jetBrainsMed, inSessionUser);
             }
             else
                 JOptionPane.showMessageDialog(frame, "Invalid Credentials");

@@ -79,21 +79,34 @@ public class Database {
         String formattedCreatedAt = createdAt.format(formatter);
 
         // Creating a document out of the data
-        Document userTransaction = new Document()
-                .append("From User", fromUser)
-                .append("To User", toUser)
-                .append("Transaction Type", transactionType)
-                .append("Transaction At", formattedCreatedAt)
-                .append("Transaction Amount", transactedAmount);
+        Document userTransaction;
+        if (toUser.equals("")) {
 
-        // Uploading the document in the respective collection
+            // We are not appending to User in cases for withdraw and deposit
+            userTransaction = new Document()
+                    .append("Username", fromUser)
+                    .append("Transaction Type", transactionType)
+                    .append("Transaction At", formattedCreatedAt)
+                    .append("Transaction Amount", transactedAmount);
+
+            // Uploading the document in the respective collection
+        }
+        else{
+            // We are not appending to User in cases for withdraw and deposit
+            userTransaction = new Document()
+                    .append("Username", fromUser)
+                    .append("To User", toUser)
+                    .append("Transaction Type", transactionType)
+                    .append("Transaction At", formattedCreatedAt)
+                    .append("Transaction Amount", transactedAmount);
+
+            // Uploading the document in the respective collection
+        }
         collectionTransaction.insertOne(userTransaction);
-
-        // Done Do Something About this
     }
 
     public static void createUser(String username, String password, String accountType, boolean isAdmin, String dob,
-                                  double bankBal) {
+                                  String bankBal) {
         // Hashing password
         try {
             final String hashedPassword = argon2.hash(10, 65536, 1, password.toCharArray());
@@ -139,11 +152,8 @@ public class Database {
         if (User == null)
             return false;
 
-        // Getting old data from the user
-        String old_data = User.get(Field_to_update).toString();
-
         // Creating Query
-        Document query = new Document(Field_to_update, old_data);
+        Document query = new Document("Username", User.get("Username"));
 
         // This Updates the User
         Document update = new Document("$set", new Document(Field_to_update, New_Value));

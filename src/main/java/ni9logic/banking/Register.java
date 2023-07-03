@@ -159,7 +159,7 @@ public class Register {
                     else if (bankBal <= 0)
                         JOptionPane.showMessageDialog(registerFrame, "Enter a valid amount as initial Balance");
                     else {
-                        Database.createUser(username[0], password[0], accountType.get(), true, dateOfBirth[0], bankBal);
+                        Database.createUser(username[0], password[0], accountType.get(), false, dateOfBirth[0], initialBalance[0]);
                         JOptionPane.showMessageDialog(registerFrame, "Account Created Successfully");
 
                         registerFrame.setVisible(false);
