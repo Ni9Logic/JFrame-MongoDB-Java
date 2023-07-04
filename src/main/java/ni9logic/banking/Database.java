@@ -89,7 +89,14 @@ public class Database {
                     .append("Transaction At", formattedCreatedAt)
                     .append("Transaction Amount", transactedAmount);
 
-            // Uploading the document in the respective collection
+        }
+        else if (transactionType.equals("Transfer-Receive")){
+            userTransaction = new Document()
+                    .append("Username", fromUser)
+                    .append("From User", toUser)
+                    .append("Transaction Type", transactionType)
+                    .append("Transaction At", formattedCreatedAt)
+                    .append("Transaction Amount", transactedAmount);
         }
         else{
             // We are not appending to User in cases for withdraw and deposit

@@ -446,9 +446,9 @@ public class UserMenu {
                                 currentBalanceLabel.repaint();
 
                                 // Sender Transaction
-                                Database.createTransaction(inSessionUser.get("Username").toString(), receiverUser.get("Username").toString(), "Transfer", dTransferAmount);
+                                Database.createTransaction(inSessionUser.get("Username").toString(), receiverUser.get("Username").toString(), "Transfer-Send", dTransferAmount);
                                 // Receiver Transaction
-                                Database.createTransaction(receiverUser.get("Username").toString(), inSessionUser.get("Username").toString(), "Transfer", dTransferAmount);
+                                Database.createTransaction(receiverUser.get("Username").toString(), inSessionUser.get("Username").toString(), "Transfer-Receive", dTransferAmount);
 
                             } else
                                 JOptionPane.showMessageDialog(transferFrame, "Random Error Occurred");
@@ -488,11 +488,149 @@ public class UserMenu {
         panel.add(transferBtn);
     }
 
-    private static void ProfileBtn(JPanel panel, Font jetBrainsMed) {
+    private static void ProfileBtn(JFrame menu, JPanel panel, Font jetBrainsMed, Font jetBrains, Document inSessionUser) {
         JButton profileBtn = new JButton("Show Profile");
         profileBtn.setFont(jetBrainsMed);
         profileBtn.setBounds(350, 250, 200, 30);
 
+        profileBtn.addActionListener(profile -> {
+            // Setting a panel in which instances will be added
+            JPanel profilePanel = new JPanel();
+            profilePanel.setBounds(0, 0, Main.WIDTH, Main.HEIGHT);
+            profilePanel.setLayout(null);
+
+            // Closing user menu frame
+            menu.setVisible(false);
+
+            // Creating new Frame for withdraw
+            JFrame profileFrame = new JFrame("Show Profile");
+
+            // Setting Size and close operation
+            profileFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            profileFrame.setSize(Main.WIDTH, Main.HEIGHT);
+            profileFrame.setVisible(true);
+            profileFrame.setLayout(null);
+
+            // Creating the label with message
+            JLabel label = new JLabel("Welcome to banking management system!");
+            label.setBounds(200, 5, 600, 50); // Set x, y, width, height
+
+            // Setting border of the label
+            label.setBorder(new LineBorder(Color.black, 6, true));
+
+            // Setting Alignment
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setVerticalAlignment(SwingConstants.CENTER);
+            label.setFont(jetBrains);
+
+
+            // Username Label
+            JLabel usernameLabel = new JLabel("Username ");
+            usernameLabel.setFont(jetBrains);
+            usernameLabel.setBounds(310, 100, 100, 30);
+            // Get Username
+            String username = inSessionUser.get("Username").toString();
+            // Actual Username
+            JLabel usernameShowLabel = new JLabel(username);
+            usernameShowLabel.setFont(jetBrainsMed);
+            usernameShowLabel.setBounds(450, 105, 200, 25);
+
+            // Password Label
+            JLabel passwordLabel = new JLabel("Password ");
+            passwordLabel.setFont(jetBrains);
+            passwordLabel.setBounds(310, 150, 100, 30);
+            // Get Password
+            String password = inSessionUser.get("Password").toString();
+            // Password Text Field
+            JLabel passwordText = new JLabel(password);
+            passwordText.setFont(jetBrainsMed);
+            passwordText.setBounds(450, 150, 500, 30);
+
+            // Account Type Label
+            JLabel accountTypeLabel = new JLabel("Account Type ");
+            accountTypeLabel.setFont(jetBrains);
+            accountTypeLabel.setBounds(310, 200, 150, 30);
+            // Get Account Type
+            String accountType = inSessionUser.get("Account_type").toString();
+            // Account Type Text
+            JLabel accountTypeText = new JLabel(accountType);
+            accountTypeText.setFont(jetBrainsMed);
+            accountTypeText.setBounds(450, 200, 150, 30);
+
+            // Date Of Birth Label
+            JLabel dobLabel = new JLabel("Date Of Birth ");
+            dobLabel.setFont(jetBrains);
+            dobLabel.setBounds(310, 255, 200, 30);
+            // Date of birth
+            String dob = inSessionUser.get("Date-Of-Birth").toString();
+            // Date Of Birth TextField
+            JLabel dobText = new JLabel(dob);
+            dobText.setFont(jetBrainsMed);
+            dobText.setBounds(450, 255, 200, 30);
+
+            // Balance label
+            JLabel balanceLabel = new JLabel("Balance Initial ");
+            balanceLabel.setFont(jetBrains);
+            balanceLabel.setBounds(310, 305, 200, 30);
+            // Balance
+            String balance = inSessionUser.get("Balance").toString();
+
+            // Date Of Birth TextField
+            JLabel balanceText = new JLabel(balance);
+            balanceText.setFont(jetBrainsMed);
+            balanceText.setBounds(450, 305, 200, 30);
+
+            // Balance label
+            JLabel isAdminLabel = new JLabel("Admin Status ");
+            isAdminLabel.setFont(jetBrains);
+            isAdminLabel.setBounds(310, 355, 200, 30);
+            // Balance
+            String isAdmin = String.valueOf(inSessionUser.get("is_Admin"));
+            // Date Of Birth TextField
+            JLabel isAdminText = new JLabel(isAdmin);
+            isAdminText.setFont(jetBrainsMed);
+            isAdminText.setBounds(450, 355, 200, 30);
+
+            // Date of Creation Label
+            JLabel creationLabel = new JLabel("Created At ");
+            creationLabel.setFont(jetBrains);
+            creationLabel.setBounds(310, 405, 200, 30);
+            // Balance
+            String createdAt = String.valueOf(inSessionUser.get("Created-At"));
+            // Date Of Birth TextField
+            JLabel creationText = new JLabel(createdAt);
+            creationText.setFont(jetBrainsMed);
+            creationText.setBounds(450, 405, 200, 30);
+
+            // Go Back Btn
+            JButton goBackBtn = new JButton("Back");
+            goBackBtn.setFont(jetBrainsMed);
+            goBackBtn.setBounds(450, 455, 200, 30);
+
+            // Getting back to old frame
+            goBackBtn.addActionListener(goBack -> {
+                profileFrame.setVisible(false);
+                menu.setVisible(true);
+            });
+
+            // Adding in panel
+            profileFrame.add(label);
+            profileFrame.add(usernameLabel);
+            profileFrame.add(usernameShowLabel);
+            profileFrame.add(passwordLabel);
+            profileFrame.add(passwordText);
+            profileFrame.add(accountTypeLabel);
+            profileFrame.add(accountTypeText);
+            profileFrame.add(dobText);
+            profileFrame.add(dobLabel);
+            profileFrame.add(balanceLabel);
+            profileFrame.add(balanceText);
+            profileFrame.add(isAdminLabel);
+            profileFrame.add(isAdminText);
+            profileFrame.add(creationLabel);
+            profileFrame.add(creationText);
+            profileFrame.add(goBackBtn);
+        });
         panel.add(profileBtn);
     }
 
@@ -550,7 +688,7 @@ public class UserMenu {
         WithdrawBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
         DepositBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
         TransferBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
-        ProfileBtn(panel, jetBrainsMed);
+        ProfileBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
         TransactionsBtn(panel, jetBrainsMed);
         LogoutBtn(frame, menu, panel, jetBrainsMed);
 

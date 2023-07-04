@@ -104,7 +104,8 @@ public class Register {
             initialBalanceLabel.setBounds(310, 305, 200, 30);
 
             // Date Of Birth TextField
-            JTextField initialBalanceText = new JTextField();
+            JTextField initialBalanceText =
+                    new JTextField();
             initialBalanceText.setFont(jetBrainsMed);
             initialBalanceText.setBounds(450, 305, 200, 25);
 
