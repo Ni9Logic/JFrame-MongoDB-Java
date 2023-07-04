@@ -262,7 +262,7 @@ public class UserMenu {
                         boolean isUpdated = Database.updateUser(inSessionUser.get("Username").toString(), "Balance", String.valueOf(newBalance));
 
                         if (isUpdated) {
-                            JOptionPane.showMessageDialog(depositFrame, "Amount Successfully Depositted");
+                            JOptionPane.showMessageDialog(depositFrame, "Amount Successfully Deposited");
                             // Update the current balance label with the new balance
 
                             // Now to get latest updates
