@@ -310,11 +310,181 @@ public class UserMenu {
         panel.add(deposit);
     }
 
-    private static void TransferBtn(JPanel panel, Font jetBrainsMed) {
+    private static void TransferBtn(JFrame menu, JPanel panel, Font jetBrainsMed, Font jetBrains, Document inSessionUser) {
         JButton transferBtn = new JButton("Transfer Amount");
         transferBtn.setFont(jetBrainsMed);
         transferBtn.setBounds(350, 200, 200, 30);
 
+        transferBtn.addActionListener(transfer -> {
+            // Setting username to null so that user won't give a null input
+            String username = null;
+
+            while (true) {
+                username = JOptionPane.showInputDialog(menu, "Enter username of the receiver");
+                // Checking username is null or not
+                if (username.isEmpty()) {
+                    JOptionPane.showMessageDialog(menu, "Kindly enter a username");
+                    continue;
+                }
+
+                // Ending loop if username is not null
+                break;
+            }
+
+            // Getting the user
+            Document receiverUser = Database.findUserByName(username);
+
+            // Checking if username exists or not
+            if (receiverUser == null)
+                JOptionPane.showMessageDialog(menu, "No such user exists");
+            else {
+                // Setting a panel in which instances will be added
+                JPanel transferPanel = new JPanel();
+                transferPanel.setBounds(0, 0, Main.WIDTH, Main.HEIGHT);
+                transferPanel.setLayout(null);
+
+                // Closing user menu frame
+                menu.setVisible(false);
+
+                // Creating new Frame for withdraw
+                JFrame transferFrame = new JFrame("Transfer Amount");
+
+                // Setting Size and close operation
+                transferFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                transferFrame.setSize(Main.WIDTH, Main.HEIGHT);
+                transferFrame.setVisible(true);
+                transferFrame.setLayout(null);
+
+                // Creating the label with message
+                JLabel label = new JLabel("Welcome to banking management system!");
+                label.setBounds(200, 5, 600, 50); // Set x, y, width, height
+
+                // Setting border of the label
+                label.setBorder(new LineBorder(Color.black, 6, true));
+
+                // Setting Alignment
+                label.setHorizontalAlignment(SwingConstants.CENTER);
+                label.setVerticalAlignment(SwingConstants.CENTER);
+                label.setFont(jetBrains);
+
+
+                // Getting a label for current Balance
+                JLabel currentBalanceLabel = new JLabel("Your current balance is: " + inSessionUser.get("Balance"));
+                currentBalanceLabel.setBounds(250, 100, 250, 50);
+                currentBalanceLabel.setForeground(Color.blue);
+                currentBalanceLabel.setFont(jetBrainsMed);
+
+                // Deposit Label
+                JLabel transferAmountLabel = new JLabel("Transfer Amount");
+                transferAmountLabel.setFont(jetBrainsMed);
+                transferAmountLabel.setBounds(250, 150, 250, 50);
+
+                // Text Field
+                JTextField transferText = new JTextField(20);
+                transferText.setBounds(360, 160, 250, 30);
+
+                // Deposit Btn
+                JButton transferButton = new JButton("Transfer Amount");
+                transferButton.setFont(jetBrainsMed);
+                transferButton.setBounds(350, 250, 200, 30);
+                transferButton.setEnabled(false);
+
+                // Document Listener
+                DocumentListener documentListener = new DocumentListener() {
+                    @Override
+                    public void insertUpdate(DocumentEvent e) {
+                        checkFields();
+                    }
+
+                    @Override
+                    public void removeUpdate(DocumentEvent e) {
+                        checkFields();
+                    }
+
+                    @Override
+                    public void changedUpdate(DocumentEvent e) {
+                        checkFields();
+                    }
+
+                    private void checkFields() {
+                        String loginText = transferText.getText();
+                        transferButton.setEnabled(!loginText.isEmpty());
+                    }
+                };
+
+                // Adding the document listener as well
+                transferText.setText("");
+                transferText.getDocument().addDocumentListener(documentListener);
+
+                // What happens when withdraw Button is pressed
+                transferButton.addActionListener(withdrawA -> {
+                    // Getting deposit Amount
+                    String transferAmount = transferText.getText();
+
+                    // Handling if withdraw amount is empty
+                    try {
+                        double dTransferAmount = Double.parseDouble(transferAmount);
+                        double availableBalance = Double.parseDouble(inSessionUser.get("Balance").toString());
+                        double receiverAvailableBalance = Double.parseDouble(receiverUser.get("Balance").toString());
+
+                        // Checking
+                        if (dTransferAmount > 0) {
+                            double newBalance = availableBalance - dTransferAmount;
+                            double receiverNewBalance = receiverAvailableBalance + dTransferAmount;
+                            boolean isUpdated = Database.updateUser(inSessionUser.get("Username").toString(), "Balance", String.valueOf(newBalance));
+                            boolean receiverIsUpdated = Database.updateUser(receiverUser.get("Username").toString(), "Balance", String.valueOf(receiverNewBalance));
+
+
+                            if (isUpdated && receiverIsUpdated) {
+                                JOptionPane.showMessageDialog(transferFrame, "Amount Successfully Transferred");
+                                // Update the current balance label with the new balance
+
+                                // Now to get latest updates
+                                Document latestUser = Database.findUserByName(inSessionUser.get("Username").toString());
+                                assert latestUser != null;
+                                currentBalanceLabel.setText("Your current balance is: " + latestUser.get("Balance").toString());
+                                currentBalanceLabel.repaint();
+
+                                // Sender Transaction
+                                Database.createTransaction(inSessionUser.get("Username").toString(), receiverUser.get("Username").toString(), "Transfer", dTransferAmount);
+                                // Receiver Transaction
+                                Database.createTransaction(receiverUser.get("Username").toString(), inSessionUser.get("Username").toString(), "Transfer", dTransferAmount);
+
+                            } else
+                                JOptionPane.showMessageDialog(transferFrame, "Random Error Occurred");
+                        } else
+                            JOptionPane.showMessageDialog(transferFrame, "Enter valid amount");
+                    } catch (NumberFormatException error) {
+                        JOptionPane.showMessageDialog(transferFrame, "Only digits allowed");
+                    }
+                });
+
+
+                // Go Back Btn
+                JButton goBackBtn = new JButton("Back");
+                goBackBtn.setFont(jetBrainsMed);
+                goBackBtn.setBounds(350, 300, 200, 30);
+
+                // Getting back to old frame
+                goBackBtn.addActionListener(goBack -> {
+                    transferFrame.setVisible(false);
+                    menu.setVisible(true);
+                });
+
+                // Adding in panel
+                transferPanel.add(label);
+                transferPanel.add(currentBalanceLabel);
+                transferPanel.add(transferAmountLabel);
+                transferPanel.add(transferButton);
+                transferPanel.add(transferText);
+                transferPanel.add(goBackBtn);
+
+                // Adding this in the frame
+                transferFrame.add(transferPanel);
+            }
+        });
+
+        // Adding to panel
         panel.add(transferBtn);
     }
 
@@ -379,7 +549,7 @@ public class UserMenu {
         panel.add(label);
         WithdrawBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
         DepositBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
-        TransferBtn(panel, jetBrainsMed);
+        TransferBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
         ProfileBtn(panel, jetBrainsMed);
         TransactionsBtn(panel, jetBrainsMed);
         LogoutBtn(frame, menu, panel, jetBrainsMed);
