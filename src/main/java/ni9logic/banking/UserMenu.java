@@ -161,10 +161,151 @@ public class UserMenu {
         panel.add(withdraw);
     }
 
-    private static void DepositBtn(JPanel panel, Font jetBrainsMed) {
+    private static void DepositBtn(JFrame menu, JPanel panel, Font jetBrainsMed, Font jetBrains, Document inSessionUser) {
         JButton deposit = new JButton("Deposit Amount");
         deposit.setFont(jetBrainsMed);
         deposit.setBounds(350, 150, 200, 30);
+
+        // What would happen if deposit btn is pressed
+        deposit.addActionListener(e -> {
+            // Setting a panel in which instances will be added
+            JPanel depositPanel = new JPanel();
+            depositPanel.setBounds(0, 0, Main.WIDTH, Main.HEIGHT);
+            depositPanel.setLayout(null);
+
+            // Closing user menu frame
+            menu.setVisible(false);
+
+            // Creating new Frame for withdraw
+            JFrame depositFrame = new JFrame("Deposit Amount");
+
+            // Setting Size and close operation
+            depositFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            depositFrame.setSize(Main.WIDTH, Main.HEIGHT);
+            depositFrame.setVisible(true);
+            depositFrame.setLayout(null);
+
+            // Creating the label with message
+            JLabel label = new JLabel("Welcome to banking management system!");
+            label.setBounds(200, 5, 600, 50); // Set x, y, width, height
+
+            // Setting border of the label
+            label.setBorder(new LineBorder(Color.black, 6, true));
+
+            // Setting Alignment
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setVerticalAlignment(SwingConstants.CENTER);
+            label.setFont(jetBrains);
+
+
+            // Getting a label for current Balance
+            JLabel currentBalanceLabel = new JLabel("Your current balance is: " + inSessionUser.get("Balance"));
+            currentBalanceLabel.setBounds(250, 100, 250, 50);
+            currentBalanceLabel.setForeground(Color.blue);
+            currentBalanceLabel.setFont(jetBrainsMed);
+
+            // Deposit Label
+            JLabel depositAmountLabel = new JLabel("Deposit Amount");
+            depositAmountLabel.setFont(jetBrainsMed);
+            depositAmountLabel.setBounds(250, 150, 250, 50);
+
+            // Text Field
+            JTextField DepositText = new JTextField(20);
+            DepositText.setBounds(360, 160, 250, 30);
+
+            // Deposit Btn
+            JButton depositButton = new JButton("Deposit Amount");
+            depositButton.setFont(jetBrainsMed);
+            depositButton.setBounds(350, 250, 200, 30);
+            depositButton.setEnabled(false);
+
+            // Document Listener
+            DocumentListener documentListener = new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    checkFields();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    checkFields();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    checkFields();
+                }
+
+                private void checkFields() {
+                    String loginText = DepositText.getText();
+                    depositButton.setEnabled(!loginText.isEmpty());
+                }
+            };
+
+            // Adding the document listener as well
+            DepositText.setText("");
+            DepositText.getDocument().addDocumentListener(documentListener);
+
+            // What happens when withdraw Button is pressed
+            depositButton.addActionListener(withdrawA -> {
+                // Getting deposit Amount
+                String depositAmount = DepositText.getText();
+
+                // Handling if withdraw amount is empty
+                try {
+                    double dWithdrawAmount = Double.parseDouble(depositAmount);
+                    double availableBalance = Double.parseDouble(inSessionUser.get("Balance").toString());
+
+                    // Checking
+                    if (dWithdrawAmount > 0) {
+                        double newBalance = availableBalance + dWithdrawAmount;
+                        boolean isUpdated = Database.updateUser(inSessionUser.get("Username").toString(), "Balance", String.valueOf(newBalance));
+
+                        if (isUpdated) {
+                            JOptionPane.showMessageDialog(depositFrame, "Amount Successfully Depositted");
+                            // Update the current balance label with the new balance
+
+                            // Now to get latest updates
+                            Document latestUser = Database.findUserByName(inSessionUser.get("Username").toString());
+                            assert latestUser != null;
+                            currentBalanceLabel.setText("Your current balance is: " + latestUser.get("Balance").toString());
+                            currentBalanceLabel.repaint();
+
+                            // Creating a transaction
+                            Database.createTransaction(inSessionUser.get("Username").toString(), "", "Withdraw", dWithdrawAmount);
+
+                        } else
+                            JOptionPane.showMessageDialog(depositFrame, "Random Error Occurred");
+                    } else
+                        JOptionPane.showMessageDialog(depositFrame, "Enter valid amount");
+                } catch (NumberFormatException error) {
+                    JOptionPane.showMessageDialog(depositFrame, "Only digits allowed");
+                }
+            });
+
+
+            // Go Back Btn
+            JButton goBackBtn = new JButton("Back");
+            goBackBtn.setFont(jetBrainsMed);
+            goBackBtn.setBounds(350, 300, 200, 30);
+
+            // Getting back to old frame
+            goBackBtn.addActionListener(goBack -> {
+                depositFrame.setVisible(false);
+                menu.setVisible(true);
+            });
+
+            // Adding in panel
+            depositPanel.add(label);
+            depositPanel.add(currentBalanceLabel);
+            depositPanel.add(depositAmountLabel);
+            depositPanel.add(depositButton);
+            depositPanel.add(DepositText);
+            depositPanel.add(goBackBtn);
+
+            // Adding this in the frame
+            depositFrame.add(depositPanel);
+        });
 
         panel.add(deposit);
     }
@@ -237,7 +378,7 @@ public class UserMenu {
         // Adding in panel
         panel.add(label);
         WithdrawBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
-        DepositBtn(panel, jetBrainsMed);
+        DepositBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
         TransferBtn(panel, jetBrainsMed);
         ProfileBtn(panel, jetBrainsMed);
         TransactionsBtn(panel, jetBrainsMed);
