@@ -150,18 +150,23 @@ public class Register {
             dobText.getDocument().addDocumentListener(documentListener);
             initialBalanceText.getDocument().addDocumentListener(documentListener);
 
+            // When register Button is pressed
             registerButton.addActionListener(register -> {
                 try {
                     double bankBal = Double.parseDouble(initialBalance[0]);
                     Document user = Database.findUserByName(username[0]);
+                    // Checking if the username already exists or not
                     if (user != null)
                         JOptionPane.showMessageDialog(registerFrame, "Username Already Exists");
+                    // Checking if user didn't enter a non-positive enter as a balance
                     else if (bankBal <= 0)
                         JOptionPane.showMessageDialog(registerFrame, "Enter a valid amount as initial Balance");
+                    // Success scenario
                     else {
                         Database.createUser(username[0], password[0], accountType.get(), false, dateOfBirth[0], initialBalance[0]);
                         JOptionPane.showMessageDialog(registerFrame, "Account Created Successfully");
 
+                        // Switching frames
                         registerFrame.setVisible(false);
                         frame.setVisible(true);
                     }

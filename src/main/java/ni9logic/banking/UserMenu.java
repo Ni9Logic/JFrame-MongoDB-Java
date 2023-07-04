@@ -272,7 +272,7 @@ public class UserMenu {
                             currentBalanceLabel.repaint();
 
                             // Creating a transaction
-                            Database.createTransaction(inSessionUser.get("Username").toString(), "", "Withdraw", dWithdrawAmount);
+                            Database.createTransaction(inSessionUser.get("Username").toString(), "", "Deposit", dWithdrawAmount);
 
                         } else
                             JOptionPane.showMessageDialog(depositFrame, "Random Error Occurred");
