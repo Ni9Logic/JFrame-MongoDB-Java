@@ -318,7 +318,7 @@ public class UserMenu {
 
         transferBtn.addActionListener(transfer -> {
             // Setting username to null so that user won't give a null input
-            String username = null;
+            String username;
 
             while (true) {
                 username = JOptionPane.showInputDialog(menu, "Enter username of the receiver");
