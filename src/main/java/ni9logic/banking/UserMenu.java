@@ -8,6 +8,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.util.List;
 
 public class UserMenu {
     private static void WithdrawBtn(JFrame menu, JPanel panel, Font jetBrainsMed, Font jetBrains, Document inSessionUser) {
@@ -631,13 +632,155 @@ public class UserMenu {
             profileFrame.add(creationText);
             profileFrame.add(goBackBtn);
         });
+
         panel.add(profileBtn);
     }
 
-    private static void TransactionsBtn(JPanel panel, Font jetBrainsMed) {
+    private static void TransactionsBtn(JFrame menu, JPanel panel, Font jetBrainsMed, Font jetBrains, Document inSessionUser) {
         JButton transactionBtn = new JButton("Show Transactions");
         transactionBtn.setFont(jetBrainsMed);
         transactionBtn.setBounds(350, 300, 200, 30);
+
+        transactionBtn.addActionListener(transaction -> {
+            // Setting a panel in which instances will be added
+            JPanel transactionPanel = new JPanel();
+            transactionPanel.setBounds(0, 0, Main.WIDTH, Main.HEIGHT);
+            transactionPanel.setLayout(null);
+
+            // Closing user menu frame
+            menu.setVisible(false);
+
+            // Creating new Frame for withdraw
+            JFrame transactionFrame = new JFrame("Deposit Amount");
+
+            // Setting Size and close operation
+            transactionFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            transactionFrame.setSize(Main.WIDTH, Main.HEIGHT);
+            transactionFrame.setVisible(true);
+            transactionFrame.setLayout(null);
+
+            // Creating the label with message
+            JLabel label = new JLabel("Welcome to banking management system!");
+            label.setBounds(200, 5, 600, 50); // Set x, y, width, height
+
+            // Setting border of the label
+            label.setBorder(new LineBorder(Color.black, 6, true));
+
+            // Setting Alignment
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            label.setVerticalAlignment(SwingConstants.CENTER);
+            label.setFont(jetBrains);
+
+            // Getting the list of transactions of inSessionUser
+            List<Document> Transactions = Database.getRecentTransactionsByUsername(inSessionUser.get("Username").toString(), 5);
+
+            // Axis
+            int x = 30;
+            int i = 0;
+            for (Document trans : Transactions) {
+                JLabel transactionLabel = new JLabel("Transaction %d".formatted(i + 1));
+
+                transactionLabel.setBounds(x, 100, 500, 50);
+                transactionLabel.setFont(jetBrains);
+
+                // Username
+                JLabel usernameLabel = new JLabel("Username: ");
+                usernameLabel.setBounds(x, 130, 500, 50);
+                usernameLabel.setFont(jetBrainsMed);
+
+                JLabel username = new JLabel(trans.get("Username").toString());
+                username.setBounds(x + 70, 130, 500, 50);
+                username.setFont(jetBrainsMed);
+
+                // Transaction Type
+                JLabel transactionType = new JLabel("Type: ");
+                transactionType.setBounds(x, 160, 500, 50);
+                transactionType.setFont(jetBrainsMed);
+
+                JLabel transType = new JLabel(trans.get("Transaction Type").toString());
+                transType.setBounds(x + 45, 160, 500, 50);
+                transType.setFont(jetBrainsMed);
+
+                // Time Stamp
+                JLabel timestampLabel = new JLabel("TimeStamp: ");
+                timestampLabel.setBounds(x, 190, 500, 50);
+                timestampLabel.setFont(jetBrainsMed);
+
+                // Getting time
+                String time = trans.get("Transaction At").toString();
+                String[] parts = time.split(" ");
+                String Year = parts[0];
+
+                JLabel timestamp = new JLabel(Year);
+                timestamp.setBounds(x + 80, 190, 500, 50);
+                timestamp.setFont(jetBrainsMed);
+
+                if (trans.get("Transaction Type").toString().equals("Transfer-Receive")) {
+                    JLabel fromUserLabel = new JLabel("From User: ");
+                    fromUserLabel.setBounds(x, 250, 500, 50);
+                    fromUserLabel.setFont(jetBrainsMed);
+
+                    JLabel fromUser = new JLabel(trans.get("From User").toString());
+                    fromUser.setBounds(x + 70, 250, 500, 50);
+                    fromUser.setFont(jetBrainsMed);
+
+                    transactionPanel.add(fromUserLabel);
+                    transactionPanel.add(fromUser);
+                } else if (trans.get("Transaction Type").toString().equals("Transfer-Send")) {
+                    JLabel fromUserLabel = new JLabel("To User: ");
+                    fromUserLabel.setBounds(x, 250, 500, 50);
+                    fromUserLabel.setFont(jetBrainsMed);
+
+                    JLabel fromUser = new JLabel(trans.get("To User").toString());
+                    fromUser.setBounds(x + 70, 250, 500, 50);
+                    fromUser.setFont(jetBrainsMed);
+
+                    transactionPanel.add(fromUserLabel);
+                    transactionPanel.add(fromUser);
+                }
+                // Amount
+                JLabel amountLabel = new JLabel("Amount: ");
+                amountLabel.setBounds(x, 220, 500, 50);
+                amountLabel.setFont(jetBrainsMed);
+
+                JLabel amount = new JLabel(trans.get("Transaction Amount").toString());
+                amount.setBounds(x + 50, 220, 500, 50);
+                amount.setFont(jetBrainsMed);
+
+
+                // Adding in panel
+                transactionPanel.add(transactionLabel);
+                transactionPanel.add(transactionType);
+                transactionPanel.add(transType);
+                transactionPanel.add(amountLabel);
+                transactionPanel.add(amount);
+                transactionPanel.add(timestampLabel);
+                transactionPanel.add(timestamp);
+                transactionPanel.add(usernameLabel);
+                transactionPanel.add(username);
+
+                // Axis
+                x += 200;
+                i += 1;
+            }
+
+            // Go back btn
+            JButton goBackBtn = new JButton("Back");
+            goBackBtn.setFont(jetBrains);
+
+            goBackBtn.setBounds(355, 400, 200, 30);
+
+            goBackBtn.addActionListener(back -> {
+                transactionFrame.setVisible(false);
+                menu.setVisible(true);
+            });
+            // Adding
+            transactionPanel.add(label);
+            transactionPanel.add(goBackBtn);
+
+
+            transactionFrame.add(transactionPanel);
+        });
 
         panel.add(transactionBtn);
     }
@@ -689,7 +832,7 @@ public class UserMenu {
         DepositBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
         TransferBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
         ProfileBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
-        TransactionsBtn(panel, jetBrainsMed);
+        TransactionsBtn(menu, panel, jetBrainsMed, jetBrains, inSessionUser);
         LogoutBtn(frame, menu, panel, jetBrainsMed);
 
         menu.add(panel);

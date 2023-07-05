@@ -3,6 +3,7 @@ package ni9logic.banking;
 // Mongo DB
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Sorts.descending;
 
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -17,6 +18,8 @@ import de.mkammerer.argon2.Argon2;
 // Date time
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 // Json Document in which we can store key value pairs
 import org.bson.Document;
@@ -67,8 +70,25 @@ public class Database {
             return null;
     }
 
-    public static FindIterable<Document> getTransactions() {
-        return collectionTransaction.find().sort(Sorts.descending("timestamp")).limit(5);
+    public static List<Document> getRecentTransactionsByUsername(String username, int limit) {
+        MongoCursor<Document> cursor = getRecentTransactionsCursorByUsername(username, limit);
+        List<Document> transactions = new ArrayList<>();
+
+        while (cursor.hasNext()) {
+            Document transaction = cursor.next();
+            transactions.add(transaction);
+        }
+
+        cursor.close();
+        return transactions;
+    }
+
+    private static MongoCursor<Document> getRecentTransactionsCursorByUsername(String username, int limit) {
+        MongoCollection<Document> collection = database.getCollection("Transactions");
+        return collection.find(eq("Username", username))
+                .sort(descending("_id"))
+                .limit(limit)
+                .iterator();
     }
 
     public static void createTransaction(String fromUser, String toUser, String transactionType,
@@ -89,16 +109,14 @@ public class Database {
                     .append("Transaction At", formattedCreatedAt)
                     .append("Transaction Amount", transactedAmount);
 
-        }
-        else if (transactionType.equals("Transfer-Receive")){
+        } else if (transactionType.equals("Transfer-Receive")) {
             userTransaction = new Document()
                     .append("Username", fromUser)
                     .append("From User", toUser)
                     .append("Transaction Type", transactionType)
                     .append("Transaction At", formattedCreatedAt)
                     .append("Transaction Amount", transactedAmount);
-        }
-        else{
+        } else {
             // We are not appending to User in cases for withdraw and deposit
             userTransaction = new Document()
                     .append("Username", fromUser)
